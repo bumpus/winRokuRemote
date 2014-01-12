@@ -30,6 +30,7 @@
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.label1 = new System.Windows.Forms.Label();
             this.btn_fwd = new System.Windows.Forms.Button();
             this.btn_play = new System.Windows.Forms.Button();
             this.btn_rew = new System.Windows.Forms.Button();
@@ -44,7 +45,6 @@
             this.btn_home = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.cbRoku = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.SuspendLayout();
@@ -81,6 +81,15 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Remote";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(8, 182);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(35, 13);
+            this.label1.TabIndex = 24;
+            this.label1.Text = "label1";
             // 
             // btn_fwd
             // 
@@ -236,15 +245,6 @@
             this.cbRoku.Size = new System.Drawing.Size(260, 21);
             this.cbRoku.TabIndex = 14;
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(8, 182);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(35, 13);
-            this.label1.TabIndex = 24;
-            this.label1.Text = "label1";
-            // 
             // RemoteForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -253,7 +253,7 @@
             this.Controls.Add(this.cbRoku);
             this.Controls.Add(this.tabControl1);
             this.Name = "RemoteForm";
-            this.Text = "Form1";
+            this.Text = "winRokuRemote";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.RemoteForm_KeyDown);
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.RemoteForm_KeyPress);
             this.tabControl1.ResumeLayout(false);
