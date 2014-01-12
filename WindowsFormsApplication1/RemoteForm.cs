@@ -52,14 +52,16 @@ namespace WindowsFormsApplication1
 
         private void onRemoteButtonPress(object sender, MouseEventArgs e)
         {
-            String command = "POST /keydown/" + DetermineButton(sender);// +" HTTP/1.0\r\n";
+            String command = "keydown/" + DetermineButton(sender);// +" HTTP/1.0\r\n";
             label1.Text = command;
+            SendHTTPCommand(command);
         }
 
         private void onRemoteButtonRelease(object sender, MouseEventArgs e)
         {
-            String command = "POST /keyup/" + DetermineButton(sender);// + " HTTP/1.0\r\n";
+            String command = "keyup/" + DetermineButton(sender);// + " HTTP/1.0\r\n";
             label1.Text = command;
+            SendHTTPCommand(command);
         }
 
         private String DetermineButton(object sender)
@@ -98,30 +100,13 @@ namespace WindowsFormsApplication1
 
         private void SendHTTPCommand(String command)
         {
+            //This method is very simple and does not check for errors. Consequence of things going wrong will be a program crash.
+            //The command protocol is very simple, we are expecting a 200 response with 0 content length, so I'm not doing anything
+            //to process the response, but asking for it. The Post is URL encoded, so the content length on the POST is also 0 (per default).
             HttpWebRequest req = (HttpWebRequest) WebRequest.Create("http://192.168.0.16:8060/"+command);
             HttpWebResponse resp;
             req.Method= "POST";
-            req.ContentLength = 3;
-
-            
-            byte[] content;
-            content = new byte[5];
-            content[0] = 48;
-            content[1] = 49;
-            content[2] = 50;
-            content[3] = 0;
-
-            using (Stream stream = req.GetRequestStream())
-            {
-                stream.Write(content, 0, content.Length);
-            }
-
             resp = (HttpWebResponse)req.GetResponse();
-
-            //IPAddress ipaddress = Dns.GetHostEntry("roku.bump.us");
-            //IPEndPoint remoteEP = new IPEndPoint(ipaddress, 8060);
-            //Socket sender = new Socket(AddressFamily.InterNetwork, 
-            //    SocketType.Stream, ProtocolType.Tcp );
 
         }
 
