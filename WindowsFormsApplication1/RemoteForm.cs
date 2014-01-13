@@ -35,31 +35,16 @@ namespace WindowsFormsApplication1
             InitializeComponent();
         }
 
-        private void RemoteForm_KeyDown(object sender, KeyEventArgs e)
-        {
-            //MessageBox.Show(e.KeyCode.ToString());
-            //switch (e.KeyCode)
-            //{
-            //    default:
-                    
-            //}
-        }
-
-        private void RemoteForm_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            
-        }
-
         private void onRemoteButtonPress(object sender, MouseEventArgs e)
         {
-            String command = "keydown/" + DetermineButton(sender);// +" HTTP/1.0\r\n";
+            String command = "keydown/" + DetermineButton(sender);
             label1.Text = command;
             SendHTTPCommand(command);
         }
 
         private void onRemoteButtonRelease(object sender, MouseEventArgs e)
         {
-            String command = "keyup/" + DetermineButton(sender);// + " HTTP/1.0\r\n";
+            String command = "keyup/" + DetermineButton(sender);
             label1.Text = command;
             SendHTTPCommand(command);
         }
@@ -108,6 +93,79 @@ namespace WindowsFormsApplication1
             req.Method= "POST";
             resp = (HttpWebResponse)req.GetResponse();
 
+        }
+
+        private void tabControl1_KeyDown(object sender, KeyEventArgs e)
+        {
+            String key = "";
+            String command = "";
+            if (DetermineKey(e, ref key))
+            {
+                command = "keydown/" + key;
+                label1.Text = command;
+                SendHTTPCommand(command);
+                e.Handled = true;
+            }
+            else
+            {
+                e.Handled = false;
+            }
+        }
+
+        private void tabControl1_KeyUp(object sender, KeyEventArgs e)
+        {
+            label1.Text = "Release " + e.KeyCode;
+            String key = "";
+            String command = "";
+            if (DetermineKey(e, ref key))
+            {
+                command = "keyup/" + key;
+                label1.Text = command;
+                SendHTTPCommand(command);
+                e.Handled = true;
+            }
+            else
+            {
+                e.Handled = false;
+            }
+        }
+
+        private bool DetermineKey(KeyEventArgs e, ref String key)
+        {
+            //Returns true or false to determine if the key is something we're going to handle
+            //The Key parameter will be populated with the String corresponding with the key name in
+            //the Roku's post command if it's one we're going to use.
+
+            //Note that there are buttons on the remote that don't have a keyboard shortcut defined here.
+            bool found = true;
+            key ="";
+            switch(e.KeyCode){
+                case Keys.Back:
+                    key = BUTTON_BACK;
+                    break;
+                case Keys.Left:
+                    key = BUTTON_LEFT;
+                    break;
+                case Keys.Right:
+                    key = BUTTON_RIGHT;
+                    break;
+                case Keys.Up:
+                    key = BUTTON_UP;
+                    break;
+                case Keys.Down:
+                    key = BUTTON_DOWN;
+                    break;
+                case Keys.Home:
+                    key = BUTTON_HOME;
+                    break;
+                case Keys.Space:
+                    key = BUTTON_SELECT;
+                    break;
+                default:
+                    found = false;
+                    break;
+            };
+            return found;
         }
 
     }

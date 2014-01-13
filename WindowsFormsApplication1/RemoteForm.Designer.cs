@@ -58,6 +58,8 @@
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(268, 233);
             this.tabControl1.TabIndex = 13;
+            this.tabControl1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tabControl1_KeyDown);
+            this.tabControl1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.tabControl1_KeyUp);
             // 
             // tabPage1
             // 
@@ -254,8 +256,6 @@
             this.Controls.Add(this.tabControl1);
             this.Name = "RemoteForm";
             this.Text = "winRokuRemote";
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.RemoteForm_KeyDown);
-            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.RemoteForm_KeyPress);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
