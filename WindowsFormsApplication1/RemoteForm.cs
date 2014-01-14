@@ -88,7 +88,7 @@ namespace WindowsFormsApplication1
             //This method is very simple and does not check for errors. Consequence of things going wrong will be a program crash.
             //The command protocol is very simple, we are expecting a 200 response with 0 content length, so I'm not doing anything
             //to process the response, but asking for it. The Post is URL encoded, so the content length on the POST is also 0 (per default).
-            HttpWebRequest req = (HttpWebRequest) WebRequest.Create("http://192.168.0.16:8060/"+command);
+            HttpWebRequest req = (HttpWebRequest) WebRequest.Create("http://"+cbRoku.Text+":8060/"+command);
             HttpWebResponse resp;
             req.Method= "POST";
             resp = (HttpWebResponse)req.GetResponse();
