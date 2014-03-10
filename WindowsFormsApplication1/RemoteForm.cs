@@ -30,9 +30,33 @@ namespace WindowsFormsApplication1
         const String BUTTON_INSTANTREPLAY="InstantReplay";
         const String BUTTON_INFO = "Info";
 
+        private void RemoveCursorNavigation(Control.ControlCollection controls)
+        {
+            foreach (Control ctrl in controls)
+            {
+                ctrl.PreviewKeyDown += new PreviewKeyDownEventHandler(MainWin_PreviewKeyDown);
+                RemoveCursorNavigation(ctrl.Controls);
+            }
+        }
+
+        public void MainWin_PreviewKeyDown(Object sender, PreviewKeyDownEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.Up:
+                case Keys.Down:
+                case Keys.Left:
+                case Keys.Right:
+                    e.IsInputKey = true;
+                    break;
+                default:
+                    break;
+            }
+        }
         public RemoteForm()
         {
             InitializeComponent();
+            RemoveCursorNavigation(this.tabControl1.Controls);
         }
 
         private void onRemoteButtonPress(object sender, MouseEventArgs e)
@@ -92,7 +116,6 @@ namespace WindowsFormsApplication1
             HttpWebResponse resp;
             req.Method= "POST";
             resp = (HttpWebResponse)req.GetResponse();
-
         }
 
         private void tabControl1_KeyDown(object sender, KeyEventArgs e)
@@ -103,7 +126,7 @@ namespace WindowsFormsApplication1
             {
                 command = "keydown/" + key;
                 label1.Text = command;
-                SendHTTPCommand(command);
+               SendHTTPCommand(command);
                 e.Handled = true;
             }
             else
