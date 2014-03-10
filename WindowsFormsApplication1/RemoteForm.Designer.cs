@@ -246,6 +246,7 @@
             this.cbRoku.Name = "cbRoku";
             this.cbRoku.Size = new System.Drawing.Size(260, 21);
             this.cbRoku.TabIndex = 14;
+            this.cbRoku.SelectedIndex = 0;
             // 
             // RemoteForm
             // 
