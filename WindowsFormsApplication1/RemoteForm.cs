@@ -18,7 +18,7 @@ namespace WindowsFormsApplication1
     {
         /*Declare a bunch of string constants to define the buttons and command strings*/
         const String BUTTON_HOME="Home";
-        const String BUTTON_REW="Rew";
+        const String BUTTON_REW="Rev";
         const String BUTTON_FWD="Fwd";
         const String BUTTON_PLAY="Play";
         const String BUTTON_SELECT="Select";
@@ -92,7 +92,7 @@ namespace WindowsFormsApplication1
                 retval=BUTTON_LEFT;
             else if (sender.ToString() == btn_play.ToString())
                 retval=BUTTON_PLAY;
-            else if (sender.ToString() == btn_rew.ToString())
+            else if (sender.ToString() == btn_rev.ToString())
                 retval=BUTTON_REW;
             else if (sender.ToString() == btn_right.ToString())
                 retval=BUTTON_RIGHT;

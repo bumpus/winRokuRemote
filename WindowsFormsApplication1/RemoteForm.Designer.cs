@@ -33,7 +33,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.btn_fwd = new System.Windows.Forms.Button();
             this.btn_play = new System.Windows.Forms.Button();
-            this.btn_rew = new System.Windows.Forms.Button();
+            this.btn_rev = new System.Windows.Forms.Button();
             this.btn_info = new System.Windows.Forms.Button();
             this.btn_instantReplay = new System.Windows.Forms.Button();
             this.btn_down = new System.Windows.Forms.Button();
@@ -66,7 +66,7 @@
             this.tabPage1.Controls.Add(this.label1);
             this.tabPage1.Controls.Add(this.btn_fwd);
             this.tabPage1.Controls.Add(this.btn_play);
-            this.tabPage1.Controls.Add(this.btn_rew);
+            this.tabPage1.Controls.Add(this.btn_rev);
             this.tabPage1.Controls.Add(this.btn_info);
             this.tabPage1.Controls.Add(this.btn_instantReplay);
             this.tabPage1.Controls.Add(this.btn_down);
@@ -115,16 +115,16 @@
             this.btn_play.MouseDown += new System.Windows.Forms.MouseEventHandler(this.onRemoteButtonPress);
             this.btn_play.MouseUp += new System.Windows.Forms.MouseEventHandler(this.onRemoteButtonRelease);
             // 
-            // btn_rew
+            // btn_rev
             // 
-            this.btn_rew.Location = new System.Drawing.Point(7, 152);
-            this.btn_rew.Name = "btn_rew";
-            this.btn_rew.Size = new System.Drawing.Size(75, 23);
-            this.btn_rew.TabIndex = 21;
-            this.btn_rew.Text = "<<";
-            this.btn_rew.UseVisualStyleBackColor = true;
-            this.btn_rew.MouseDown += new System.Windows.Forms.MouseEventHandler(this.onRemoteButtonPress);
-            this.btn_rew.MouseUp += new System.Windows.Forms.MouseEventHandler(this.onRemoteButtonRelease);
+            this.btn_rev.Location = new System.Drawing.Point(7, 152);
+            this.btn_rev.Name = "btn_rev";
+            this.btn_rev.Size = new System.Drawing.Size(75, 23);
+            this.btn_rev.TabIndex = 21;
+            this.btn_rev.Text = "<<";
+            this.btn_rev.UseVisualStyleBackColor = true;
+            this.btn_rev.MouseDown += new System.Windows.Forms.MouseEventHandler(this.onRemoteButtonPress);
+            this.btn_rev.MouseUp += new System.Windows.Forms.MouseEventHandler(this.onRemoteButtonRelease);
             // 
             // btn_info
             // 
@@ -270,7 +270,7 @@
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.Button btn_fwd;
         private System.Windows.Forms.Button btn_play;
-        private System.Windows.Forms.Button btn_rew;
+        private System.Windows.Forms.Button btn_rev;
         private System.Windows.Forms.Button btn_info;
         private System.Windows.Forms.Button btn_instantReplay;
         private System.Windows.Forms.Button btn_down;
