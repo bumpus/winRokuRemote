@@ -10,7 +10,8 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using System.Timers;
+using Microsoft.Win32;
 
 namespace WindowsFormsApplication1
 {
@@ -29,6 +30,17 @@ namespace WindowsFormsApplication1
         const String BUTTON_BACK="Back";
         const String BUTTON_INSTANTREPLAY="InstantReplay";
         const String BUTTON_INFO = "Info";
+
+        const String KEY_NAME = "Software\\Bump.us\\RokuRemote";
+        const String VALUE_NAME_ROKU_IP = "RokuIP";
+
+
+
+        bool searching;
+        System.Timers.Timer searchTimer;
+        const int searchTime = 3;
+
+        RegistryKey key;
 
         private void RemoveCursorNavigation(Control.ControlCollection controls)
         {
@@ -57,6 +69,14 @@ namespace WindowsFormsApplication1
         {
             InitializeComponent();
             RemoveCursorNavigation(this.tabControl1.Controls);
+            cbRoku.Items.Clear();
+            
+            searchTimer = new System.Timers.Timer(1000 * searchTime);
+            searchTimer.Elapsed += new ElapsedEventHandler(searchTimeout);
+
+            key = Registry.CurrentUser.CreateSubKey(KEY_NAME);
+
+            getRokuDevices();
         }
 
         private void onRemoteButtonPress(object sender, MouseEventArgs e)
@@ -109,13 +129,53 @@ namespace WindowsFormsApplication1
 
         private void SendHTTPCommand(String command)
         {
-            //This method is very simple and does not check for errors. Consequence of things going wrong will be a program crash.
-            //The command protocol is very simple, we are expecting a 200 response with 0 content length, so I'm not doing anything
-            //to process the response, but asking for it. The Post is URL encoded, so the content length on the POST is also 0 (per default).
-            HttpWebRequest req = (HttpWebRequest) WebRequest.Create("http://"+cbRoku.Text+":8060/"+command);
-            HttpWebResponse resp;
-            req.Method= "POST";
-            resp = (HttpWebResponse)req.GetResponse();
+            // This method posts a command to the roku. It does not check for a response. Commands almost
+            // always succeed unless there is a network error.
+            try
+            {
+                HttpWebRequest req = (HttpWebRequest)WebRequest.Create("http://" + cbRoku.Text + ":8060/" + command);
+                HttpWebResponse resp;
+                req.Method = "POST";
+                resp = (HttpWebResponse)req.GetResponse();
+            }catch
+            {
+                MessageBox.Show("Couldn't contact Roku");
+            }
+        }
+
+        private String SendHTTPQuery(String query)
+        {
+            String returnValue = "";
+            try
+            {
+                
+                HttpWebRequest req = (HttpWebRequest)WebRequest.Create("http://" + cbRoku.Text + ":8060/" + query);
+                HttpWebResponse resp;
+
+                req.Method = "GET";
+
+                resp = (HttpWebResponse)req.GetResponse();
+                Stream ReceiveStream = resp.GetResponseStream();
+                StreamReader readStream = new StreamReader(ReceiveStream, System.Text.Encoding.GetEncoding("utf-8"));
+                Char[] read = new Char[256];
+
+                // Read 256 charcters at a time.    
+                int count = readStream.Read(read, 0, 256);
+
+                while (count > 0)
+                {
+                    // Dump the 256 characters on a string and display the string onto the console.
+                    returnValue += new String(read, 0, count);
+                    count = readStream.Read(read, 0, 256);
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Couldn't contact Roku");
+                return "";
+            }
+            return returnValue;
+            
         }
 
         private void tabControl1_KeyDown(object sender, KeyEventArgs e)
@@ -191,5 +251,91 @@ namespace WindowsFormsApplication1
             return found;
         }
 
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //Update the channel list if we have selected the channel tab
+            if(1 == tabControl1.SelectedIndex)
+            {
+                String xmlList = SendHTTPQuery("query/apps");
+
+            }
+        }
+
+        private void getRokuDevices()
+        {
+            IPEndPoint LocalEndPoint = new IPEndPoint(IPAddress.Any, 0);
+            IPEndPoint MulticastEndPoint = new IPEndPoint(IPAddress.Parse("239.255.255.250"), 1900);
+
+            Socket UdpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+
+            UdpSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            UdpSocket.Bind(LocalEndPoint);
+            UdpSocket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(MulticastEndPoint.Address, IPAddress.Any));
+            UdpSocket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, 2);
+            UdpSocket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastLoopback, true);
+
+            string SearchString = "M-SEARCH * HTTP/1.1\r\nHost: 239.255.255.250:1900\r\nMan: \"ssdp:discover\"\r\nST: roku:ecp\r\n\r\n";
+
+            UdpSocket.SendTo(Encoding.UTF8.GetBytes(SearchString), SocketFlags.None, MulticastEndPoint);
+
+            byte[] ReceiveBuffer = new byte[64000];
+
+            int ReceivedBytes = 0;
+
+            searching = true;
+            searchTimer.Enabled = true;
+
+            while (searching)
+            {
+                if (UdpSocket.Available > 0)
+                {
+                    ReceivedBytes = UdpSocket.Receive(ReceiveBuffer, SocketFlags.None);
+
+                    if (ReceivedBytes > 0)
+                    {
+                        string receivedText = Encoding.ASCII.GetString(ReceiveBuffer);
+                        System.Text.RegularExpressions.Regex regex = new System.Text.RegularExpressions.Regex("LOCATION: http://(.*):8060/");
+                        var match = regex.Match(receivedText);
+                        if (match.Success)
+                        {
+                            cbRoku.Items.Add(match.Groups[1].Value);
+                        }
+                    }
+                }
+            }
+
+            //See if we found the Roku we were using last time. If so use it, else use the first one we found.
+            if (cbRoku.Items.Count != 0)
+            {
+                object temp = key.GetValue(VALUE_NAME_ROKU_IP);
+                if (null != temp)
+                {
+                    int index = cbRoku.Items.IndexOf(Convert.ToString(temp));
+                    if (-1 != index)
+                    {
+                        cbRoku.SelectedIndex = index;
+                    }
+                    else
+                    {
+                        cbRoku.SelectedIndex = 0;
+                    }
+                }
+                else
+                {
+                    cbRoku.SelectedIndex = 0;
+                }
+            }
+        }
+
+        void searchTimeout(object sender, EventArgs e)
+        {
+            searching = false;
+        }
+
+        private void cbRoku_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            key.SetValue(VALUE_NAME_ROKU_IP, cbRoku.SelectedItem.ToString(), RegistryValueKind.String);
+        }
     }
 }
+

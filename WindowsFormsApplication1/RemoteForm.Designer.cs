@@ -58,6 +58,7 @@
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(268, 233);
             this.tabControl1.TabIndex = 13;
+            this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             this.tabControl1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tabControl1_KeyDown);
             this.tabControl1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.tabControl1_KeyUp);
             // 
@@ -239,14 +240,11 @@
             // 
             this.cbRoku.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbRoku.FormattingEnabled = true;
-            this.cbRoku.Items.AddRange(new object[] {
-            "192.168.0.16",
-            "192.168.0.20"});
             this.cbRoku.Location = new System.Drawing.Point(16, 250);
             this.cbRoku.Name = "cbRoku";
             this.cbRoku.Size = new System.Drawing.Size(260, 21);
             this.cbRoku.TabIndex = 14;
-            this.cbRoku.SelectedIndex = 0;
+            this.cbRoku.SelectedIndexChanged += new System.EventHandler(this.cbRoku_SelectedIndexChanged);
             // 
             // RemoteForm
             // 
