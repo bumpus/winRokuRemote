@@ -256,6 +256,7 @@
             this.lbChannelList.Name = "lbChannelList";
             this.lbChannelList.Size = new System.Drawing.Size(247, 199);
             this.lbChannelList.TabIndex = 0;
+            this.lbChannelList.DoubleClick += new System.EventHandler(this.lbChannelList_DoubleClick);
             // 
             // RemoteForm
             // 

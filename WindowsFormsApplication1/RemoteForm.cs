@@ -14,6 +14,7 @@ using System.Timers;
 using Microsoft.Win32;
 using System.Xml;
 using System.Threading;
+using winRokuRemote;
 
 namespace WinRokuRemote
 {
@@ -39,7 +40,7 @@ namespace WinRokuRemote
 
         bool searching;
         System.Timers.Timer searchTimer;
-        const int searchTime = 3;
+        const int searchTime = 2;
 
         Thread getRokuDevicesThread, getChannelsThread;
 
@@ -260,13 +261,17 @@ namespace WinRokuRemote
             if(1 == tabControl1.SelectedIndex)
             {
                 String xmlList = SendHTTPQuery("query/apps");
-                using (XmlReader reader = XmlReader.Create(new StringReader(xmlList)))
+                if ("" != xmlList)
                 {
-                    while (reader.ReadToFollowing("app"))
+                    using (XmlReader reader = XmlReader.Create(new StringReader(xmlList)))
                     {
-                        int id = Convert.ToInt32(reader.GetAttribute("id"));
-                        string appname = reader.ReadElementContentAsString();
-                        lbChannelList.Items.Add(appname);
+                        while (reader.ReadToFollowing("app"))
+                        {
+                            int id = Convert.ToInt32(reader.GetAttribute("id"));
+                            string appname = reader.ReadElementContentAsString();
+
+                            lbChannelList.Items.Add(new RokuApp(appname, id));
+                        }
                     }
                 }
 
@@ -363,6 +368,12 @@ namespace WinRokuRemote
         private void searchTimeout(object sender, EventArgs e)
         {
             searching = false;
+        }
+
+        private void lbChannelList_DoubleClick(object sender, EventArgs e)
+        {
+            SendHTTPCommand("launch/" + (((RokuApp)lbChannelList.SelectedItem).getId()).ToString());
+            tabControl1.SelectedIndex = 0;
         }
 
         private void cbRoku_SelectedIndexChanged(object sender, EventArgs e)
