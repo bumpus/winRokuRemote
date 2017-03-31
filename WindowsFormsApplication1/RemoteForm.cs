@@ -13,6 +13,7 @@ using System.Windows.Forms;
 using System.Timers;
 using Microsoft.Win32;
 using System.Xml;
+using System.Threading;
 
 namespace WinRokuRemote
 {
@@ -40,6 +41,8 @@ namespace WinRokuRemote
         System.Timers.Timer searchTimer;
         const int searchTime = 3;
 
+        Thread getRokuDevicesThread, getChannelsThread;
+
         public RemoteForm()
         {
             InitializeComponent();
@@ -51,7 +54,8 @@ namespace WinRokuRemote
 
             key = Registry.CurrentUser.CreateSubKey(KEY_NAME);
 
-            getRokuDevices();
+            getRokuDevicesThread = new Thread(new ThreadStart(getRokuDevices));
+            getRokuDevicesThread.Start();
         }
 
         private void RemoveCursorNavigation(Control.ControlCollection controls)
@@ -271,6 +275,9 @@ namespace WinRokuRemote
 
         private void getRokuDevices()
         {
+            List<string> rokuList = new List<string>();
+            int selectedRoku = -1;
+
             IPEndPoint LocalEndPoint = new IPEndPoint(IPAddress.Any, 0);
             IPEndPoint MulticastEndPoint = new IPEndPoint(IPAddress.Parse("239.255.255.250"), 1900);
 
@@ -306,26 +313,22 @@ namespace WinRokuRemote
                         var match = regex.Match(receivedText);
                         if (match.Success)
                         {
-                            cbRoku.Items.Add(match.Groups[1].Value);
+                            rokuList.Add(match.Groups[1].Value);
                         }
                     }
                 }
             }
 
             //See if we found the Roku we were using last time. If so use it, else use the first one we found.
-            if (cbRoku.Items.Count != 0)
+            if (rokuList.Count != 0)
             {
                 object temp = key.GetValue(VALUE_NAME_ROKU_IP);
                 if (null != temp)
                 {
-                    int index = cbRoku.Items.IndexOf(Convert.ToString(temp));
-                    if (-1 != index)
-                    {
-                        cbRoku.SelectedIndex = index;
-                    }
-                    else
-                    {
-                        cbRoku.SelectedIndex = 0;
+                    selectedRoku = rokuList.IndexOf(Convert.ToString(temp));
+                    if (-1 == selectedRoku)
+                    { 
+                        selectedRoku = 0;
                     }
                 }
                 else
@@ -333,9 +336,31 @@ namespace WinRokuRemote
                     cbRoku.SelectedIndex = 0;
                 }
             }
+
+            updateRokuComboBox(rokuList, selectedRoku);
         }
 
-        void searchTimeout(object sender, EventArgs e)
+        private void updateRokuComboBox(List<string> rokuList, int selectedRoku)
+        {
+            // Cross thread - so you don't get the cross-threading exception
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke((MethodInvoker)delegate
+                {
+                    updateRokuComboBox(rokuList, selectedRoku);
+                });
+                return;
+            }
+
+            cbRoku.Items.Clear();
+            foreach(string i in rokuList)
+            {
+                cbRoku.Items.Add(i);
+            }
+            cbRoku.SelectedIndex = selectedRoku;
+        }
+
+        private void searchTimeout(object sender, EventArgs e)
         {
             searching = false;
         }
