@@ -12,8 +12,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Timers;
 using Microsoft.Win32;
+using System.Xml;
 
-namespace WindowsFormsApplication1
+namespace WinRokuRemote
 {
     public partial class RemoteForm : Form
     {
@@ -33,14 +34,25 @@ namespace WindowsFormsApplication1
 
         const String KEY_NAME = "Software\\Bump.us\\RokuRemote";
         const String VALUE_NAME_ROKU_IP = "RokuIP";
-
-
+        RegistryKey key;
 
         bool searching;
         System.Timers.Timer searchTimer;
         const int searchTime = 3;
 
-        RegistryKey key;
+        public RemoteForm()
+        {
+            InitializeComponent();
+            RemoveCursorNavigation(this.tabControl1.Controls);
+            cbRoku.Items.Clear();
+            
+            searchTimer = new System.Timers.Timer(1000 * searchTime);
+            searchTimer.Elapsed += new ElapsedEventHandler(searchTimeout);
+
+            key = Registry.CurrentUser.CreateSubKey(KEY_NAME);
+
+            getRokuDevices();
+        }
 
         private void RemoveCursorNavigation(Control.ControlCollection controls)
         {
@@ -64,19 +76,6 @@ namespace WindowsFormsApplication1
                 default:
                     break;
             }
-        }
-        public RemoteForm()
-        {
-            InitializeComponent();
-            RemoveCursorNavigation(this.tabControl1.Controls);
-            cbRoku.Items.Clear();
-            
-            searchTimer = new System.Timers.Timer(1000 * searchTime);
-            searchTimer.Elapsed += new ElapsedEventHandler(searchTimeout);
-
-            key = Registry.CurrentUser.CreateSubKey(KEY_NAME);
-
-            getRokuDevices();
         }
 
         private void onRemoteButtonPress(object sender, MouseEventArgs e)
@@ -257,6 +256,15 @@ namespace WindowsFormsApplication1
             if(1 == tabControl1.SelectedIndex)
             {
                 String xmlList = SendHTTPQuery("query/apps");
+                using (XmlReader reader = XmlReader.Create(new StringReader(xmlList)))
+                {
+                    while (reader.ReadToFollowing("app"))
+                    {
+                        int id = Convert.ToInt32(reader.GetAttribute("id"));
+                        string appname = reader.ReadElementContentAsString();
+                        lbChannelList.Items.Add(appname);
+                    }
+                }
 
             }
         }

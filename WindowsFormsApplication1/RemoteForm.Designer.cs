@@ -1,4 +1,4 @@
-﻿namespace WindowsFormsApplication1
+﻿namespace WinRokuRemote
 {
     partial class RemoteForm
     {
@@ -45,8 +45,10 @@
             this.btn_home = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.cbRoku = new System.Windows.Forms.ComboBox();
+            this.lbChannelList = new System.Windows.Forms.ListBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -228,6 +230,7 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.lbChannelList);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
@@ -246,6 +249,14 @@
             this.cbRoku.TabIndex = 14;
             this.cbRoku.SelectedIndexChanged += new System.EventHandler(this.cbRoku_SelectedIndexChanged);
             // 
+            // lbChannelList
+            // 
+            this.lbChannelList.FormattingEnabled = true;
+            this.lbChannelList.Location = new System.Drawing.Point(7, 7);
+            this.lbChannelList.Name = "lbChannelList";
+            this.lbChannelList.Size = new System.Drawing.Size(247, 199);
+            this.lbChannelList.TabIndex = 0;
+            // 
             // RemoteForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -258,6 +269,7 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
+            this.tabPage2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -281,8 +293,7 @@
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.ComboBox cbRoku;
         private System.Windows.Forms.Label label1;
-
-
+        private System.Windows.Forms.ListBox lbChannelList;
     }
 }
 
